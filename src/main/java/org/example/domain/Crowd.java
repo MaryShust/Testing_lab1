@@ -1,8 +1,8 @@
 package org.example.domain;
 
 import lombok.*;
-import org.example.domain.PublicSpeakingScene.Mood;
-import org.example.domain.PublicSpeakingScene.SoundLevel;
+import org.example.domain.Mood;
+import org.example.domain.SoundLevel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

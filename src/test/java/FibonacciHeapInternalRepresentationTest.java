@@ -78,7 +78,7 @@ public class FibonacciHeapInternalRepresentationTest {
 
         // --- ЭТАЛОННАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ ---
         assertEquals(3, heap.min.key);
-        assertEquals(List.of(3, 5, 7), snapshots.get(3).rootListOrder); // Порядок зависит от реализации
+        assertEquals(List.of(3, 5, 7), snapshots.get(3).rootListOrder);
     }
 
     // -----------------------------------------------------------
@@ -87,7 +87,7 @@ public class FibonacciHeapInternalRepresentationTest {
     @Test
     @DisplayName("ExtractMin: консолидация деревьев одинаковой степени")
     void testExtractMinConsolidation() {
-        // Подготовка: куча с нарушением структуры (числа Фибоначчи)
+
         heap.insert(1, "A");
         heap.insert(2, "B");
         heap.insert(3, "C");

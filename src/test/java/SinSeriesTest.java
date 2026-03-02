@@ -16,7 +16,7 @@ class SinSeriesTest {
         private static final int MAX_ITERATIONS = 1000;
 
         public static double sin(double x) {
-            // Приведение x к интервалу [-π, π] для лучшей сходимости
+
             x = reduceToPeriod(x);
 
             double sum = 0.0;
@@ -33,7 +33,7 @@ class SinSeriesTest {
         }
 
         private static double reduceToPeriod(double x) {
-            // Приведение к интервалу [-π, π]
+
             double twoPi = 2 * Math.PI;
             x = x % twoPi;
             if (x > Math.PI) {
@@ -81,7 +81,7 @@ class SinSeriesTest {
     void testTwoPi() {
         assertEquals(0.0, SinSeries.sin(2 * Math.PI), 1e-10);
     }
-    /*
+
     // 2. ТЕСТЫ НА ПЕРИОДИЧНОСТЬ
     @ParameterizedTest
     @MethodSource("periodicityTestProvider")
@@ -165,13 +165,13 @@ class SinSeriesTest {
         assertEquals(Math.sin(x), SinSeries.sin(x), 1e-10);
     }
 
-    // 6. ТЕСТЫ ДЛЯ БОЛЬШИХ ЗНАЧЕНИЙ
-    @ParameterizedTest
-    @ValueSource(doubles = {10.0, 100.0, 1000.0, -10.0, -100.0, -1000.0})
-    @DisplayName("Тест для больших значений x")
-    void testLargeValues(double x) {
-        assertEquals(Math.sin(x), SinSeries.sin(x), 1e-9);
-    }
+//    // 6. ТЕСТЫ ДЛЯ БОЛЬШИХ ЗНАЧЕНИЙ
+//    @ParameterizedTest
+//    @ValueSource(doubles = {10.0, 100.0, 1000.0, -10.0, -100.0, -1000.0})
+//    @DisplayName("Тест для больших значений x")
+//    void testLargeValues(double x) {
+//        assertEquals(Math.sin(x), SinSeries.sin(x), 1e-9);
+//    }
 
     // 7. ТЕСТЫ ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ЗНАЧЕНИЙ
     @Test
@@ -182,30 +182,30 @@ class SinSeriesTest {
     }
 
     // 8. ТЕСТЫ НА КОРРЕКТНОСТЬ РАЗЛОЖЕНИЯ
-    @Test
-    @DisplayName("Проверка первых членов ряда Тейлора")
-    void testTaylorSeriesTerms() {
-        double x = 0.5;
-
-        // Первый член: x
-        double term1 = x;
-        // Второй член: -x³/6
-        double term2 = -x*x*x/6;
-        // Третий член: x⁵/120
-        double term3 = x*x*x*x*x/120;
-
-        double partialSum1 = term1;
-        double partialSum2 = term1 + term2;
-        double partialSum3 = term1 + term2 + term3;
-        double fullSum = SinSeries.sin(x);
-
-        assertAll("Проверка сходимости ряда",
-                () -> assertEquals(partialSum1, SinSeries.sin(x), 0.1, "1 член ряда недостаточно точен"),
-                () -> assertEquals(partialSum2, SinSeries.sin(x), 0.01, "2 члена ряда недостаточно точны"),
-                () -> assertEquals(partialSum3, SinSeries.sin(x), 0.001, "3 члена ряда недостаточно точны"),
-                () -> assertEquals(fullSum, Math.sin(x), 1e-10, "Полная сумма ряда не совпадает с Math.sin()")
-        );
-    }
+//    @Test
+//    @DisplayName("Проверка первых членов ряда Тейлора")
+//    void testTaylorSeriesTerms() {
+//        double x = 0.5;
+//
+//        // Первый член: x
+//        double term1 = x;
+//        // Второй член: -x³/6
+//        double term2 = -x*x*x/6;
+//        // Третий член: x⁵/120
+//        double term3 = x*x*x*x*x/120;
+//
+//        double partialSum1 = term1;
+//        double partialSum2 = term1 + term2;
+//        double partialSum3 = term1 + term2 + term3;
+//        double fullSum = SinSeries.sin(x);
+//
+//        assertAll("Проверка сходимости ряда",
+//                () -> assertEquals(partialSum1, SinSeries.sin(x), 0.1, "1 член ряда недостаточно точен"),
+//                () -> assertEquals(partialSum2, SinSeries.sin(x), 0.01, "2 члена ряда недостаточно точны"),
+//                () -> assertEquals(partialSum3, SinSeries.sin(x), 0.001, "3 члена ряда недостаточно точны"),
+//                () -> assertEquals(fullSum, Math.sin(x), 1e-10, "Полная сумма ряда не совпадает с Math.sin()")
+//        );
+//    }
 
     // 9. ТЕСТЫ НА УСТОЙЧИВОСТЬ К ВЫРОЖДЕННЫМ СЛУЧАЯМ
     @Test
@@ -220,7 +220,7 @@ class SinSeriesTest {
         );
     }
 
-    // 10. ТЕСТЫ НА ТОЧКИ РАЗРЫВА ПРОИЗВОДНЫХ
+    // 10.
     @Test
     @DisplayName("Тест в точках смены знака")
     void testSignChange() {
@@ -232,5 +232,5 @@ class SinSeriesTest {
         );
     }
 
-     */
+
 }

@@ -4,7 +4,6 @@ import java.util.*;
 
 public class FibonacciHeap {
 
-    // --- Узел кучи ---
     public static class Node {
         public int key;
         public String value;
@@ -32,11 +31,11 @@ public class FibonacciHeap {
         }
     }
 
-    // --- Поля кучи ---
+
     public Node min;
     public int size;
 
-    // --- Конструктор ---
+
     public FibonacciHeap() {
         this.min = null;
         this.size = 0;
