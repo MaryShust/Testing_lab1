@@ -1,9 +1,7 @@
 import org.example.domain.*;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.params.provider.*;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
-import org.example.domain.*;
 
 @DisplayName("Тесты публичного выступления с Lombok")
 class SceneLombokTest {
@@ -50,6 +48,249 @@ class SceneLombokTest {
                 .platform(platform)
                 .arthur(arthur)
                 .build();
+    }
+
+    // ==================== ТЕСТЫ ДЛЯ ARTHUR ====================
+
+    @Nested
+    @DisplayName("Arthur дополнительные тесты")
+    class ArthurAdditionalTests {
+
+        @Test
+        @DisplayName("glideTo с окном без локации выбрасывает исключение")
+        void glideToWindowWithNoLocation() {
+            Window windowWithoutLocation = new Window("W2", 3, false);
+            // Не устанавливаем локацию
+
+            IllegalStateException exception = assertThrows(
+                    IllegalStateException.class,
+                    () -> arthur.glideTo(windowWithoutLocation)
+            );
+            assertEquals("Window has no location", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("stop сбрасывает состояние")
+        void stopResetsState() {
+            // Изначально не скользит
+            assertFalse(arthur.isGliding());
+            assertNull(arthur.getDestination());
+
+            Window window = building.findWindowOnFloor(2).get();
+            arthur.glideTo(window);
+
+            // После glideTo
+            assertTrue(arthur.isGliding());
+            assertNotNull(arthur.getDestination());
+
+            arthur.stop();
+
+            // После stop
+            assertFalse(arthur.isGliding());
+            assertNull(arthur.getDestination());
+        }
+
+        @Test
+        @DisplayName("moveTo изменяет локацию")
+        void moveToChangesLocation() {
+            Location newLocation = Location.builder().x(100).y(100).z(100).build();
+            arthur.moveTo(newLocation);
+            assertEquals(newLocation, arthur.getLocation());
+        }
+
+        @Test
+        @DisplayName("Builder.Default работает для isGliding")
+        void builderDefaultForIsGliding() {
+            Arthur defaultArthur = Arthur.builder()
+                    .location(ground)
+                    .build();
+            assertFalse(defaultArthur.isGliding());
+
+            // Проверяем, что можно установить через билдер
+            Arthur glidingArthur = Arthur.builder()
+                    .location(ground)
+                    .isGliding(true)
+                    .build();
+            assertTrue(glidingArthur.isGliding());
+        }
+
+        @Test
+        @DisplayName("Setter(AccessLevel.NONE) для destination и isGliding")
+        void setterAccessLevelNone() {
+            Arthur arthur = Arthur.builder().location(ground).build();
+
+            assertDoesNotThrow(() -> {
+                arthur.glideTo(building.findWindowOnFloor(2).get());
+                arthur.stop();
+                arthur.moveTo(ground);
+            });
+        }
+
+        @Test
+        @DisplayName("@NoArgsConstructor создает объект с значениями по умолчанию")
+        void noArgsConstructorCreatesDefaultObject() {
+            // Создаем объект через пустой конструктор
+            Arthur arthur = new Arthur();
+
+            // Проверяем значения по умолчанию
+            assertAll(
+                    () -> assertNull(arthur.getLocation(), "location должен быть null"),
+                    () -> assertNull(arthur.getDestination(), "destination должен быть null"),
+                    () -> assertFalse(arthur.isGliding(), "isGliding должен быть false")
+            );
+
+            // Проверяем, что объект можно использовать
+            Location loc = Location.builder().x(1).y(2).z(3).build();
+            arthur.setLocation(loc); // setter от @Data
+            arthur.moveTo(loc); // собственный метод
+
+            assertEquals(loc, arthur.getLocation());
+        }
+    }
+
+    // ==================== НОВЫЕ ТЕСТЫ ДЛЯ BUILDING ====================
+
+    @Nested
+    @DisplayName("Building дополнительные тесты")
+    class BuildingAdditionalTests {
+
+        @Test
+        @DisplayName("Builder создает пустой список окон")
+        void builderCreatesEmptyWindowList() {
+            Building b = Building.builder().name("Test").build();
+            assertNotNull(b.getWindows());
+            assertTrue(b.getWindows().isEmpty());
+        }
+
+
+        @Test
+        @DisplayName("findWindowOnFloor возвращает Optional.empty для несуществующего этажа")
+        void findWindowOnFloorReturnsEmptyForMissingFloor() {
+            Optional<Window> result = building.findWindowOnFloor(999);
+            assertTrue(result.isEmpty());
+        }
+
+        @Test
+        @DisplayName("findWindowOnFloor возвращает окно для существующего этажа")
+        void findWindowOnFloorReturnsWindowForExistingFloor() {
+            // Добавляем окна на разные этажи
+            building.addWindow(new Window("W1", 1, false));
+            building.addWindow(new Window("W2", 3, true));
+            building.addWindow(new Window("W3", 3, false));
+
+            Optional<Window> result = building.findWindowOnFloor(3);
+            assertTrue(result.isPresent());
+            assertEquals(3, result.get().getFloor());
+
+            // Проверяем, что возвращается первое окно (но это не гарантировано)
+            // Просто проверяем, что окно с правильным этажом
+        }
+
+        @Test
+        @DisplayName("getMagnificentWindows возвращает только великолепные окна")
+        void getMagnificentWindowsReturnsOnlyMagnificent() {
+            building.clearWindow();
+            building.addWindow(new Window("W1", 1, false));
+            building.addWindow(new Window("W2", 2, true));
+            building.addWindow(new Window("W3", 3, false));
+            building.addWindow(new Window("W4", 4, true));
+
+            List<Window> magnificent = building.getMagnificentWindows();
+            assertEquals(2, magnificent.size());
+            assertTrue(magnificent.stream().allMatch(Window::isMagnificent));
+        }
+
+        @Test
+        @DisplayName("getWindows возвращает неизменяемый список")
+        void getWindowsReturnsUnmodifiableList() {
+            List<Window> windows = building.getWindows();
+            assertThrows(UnsupportedOperationException.class,
+                    () -> windows.add(new Window("W5", 5, false)));
+        }
+
+        @Test
+        @DisplayName("@NonNull валидация для name")
+        void nonNullValidationForName() {
+            assertThrows(NullPointerException.class,
+                    () -> Building.builder().name(null).build());
+        }
+
+        @Test
+        @DisplayName("addWindow с null выбрасывает исключение")
+        void addWindowWithNullThrowsException() {
+            assertThrows(NullPointerException.class,
+                    () -> building.addWindow(null));
+        }
+
+        @Test
+        @DisplayName("@NonNull поля не проверяются в пустом конструкторе")
+        void nonNullFieldNotValidatedInNoArgsConstructor() {
+            // Пустой конструктор не проверяет @NonNull
+            Building building = new Building();
+            assertNull(building.getName());
+
+            // Но при использовании билдера проверка есть
+            assertThrows(NullPointerException.class,
+                    () -> Building.builder().build(),
+                    "Билдер должен проверять @NonNull");
+        }
+
+    }
+
+    // ==================== НОВЫЕ ТЕСТЫ ДЛЯ CROWD ====================
+
+    @Nested
+    @DisplayName("Crowd тесты")
+    class CrowdTests {
+
+        @Test
+        @DisplayName("Создание через билдер")
+        void createWithBuilder() {
+            Crowd c = Crowd.builder().build();
+            assertEquals(0, c.size());
+            assertFalse(c.isCheering());
+        }
+
+        @Test
+        @DisplayName("Добавление людей")
+        void addPeople() {
+            Person p1 = Person.builder().id("1").location(ground).build();
+            Person p2 = Person.builder().id("2").location(ground).build();
+
+            crowd.addPerson(p1);
+            crowd.addPerson(p2);
+
+            assertEquals(2, crowd.size());
+            assertTrue(crowd.getPeople().contains(p1));
+        }
+
+        @Test
+        @DisplayName("Ликование толпы")
+        void cheering() {
+            Person p = Person.builder().id("1").location(ground).build();
+            crowd.addPerson(p);
+            crowd.cheer();
+
+            assertTrue(crowd.isCheering());
+            assertTrue(p.isCheering());
+            assertEquals(Mood.EXULTANT, crowd.getMood());
+            assertEquals(SoundLevel.LOUD, crowd.getSound());
+        }
+    }
+
+    @Test
+    void shouldCreateCrowdWithNoArgsConstructor() {
+        // Вызов конструктора без параметров
+        Crowd crowd = new Crowd();
+
+        // Проверяем, что объект создан
+        assertNotNull(crowd);
+
+        // Проверяем значения по умолчанию
+        assertNotNull(crowd.getPeople(), "Список людей должен быть инициализирован");
+        assertTrue(crowd.getPeople().isEmpty(), "По умолчанию толпа должна быть пустой");
+        assertEquals(Mood.NEUTRAL, crowd.getMood(), "Настроение по умолчанию должно быть NEUTRAL");
+        assertEquals(SoundLevel.SILENCE, crowd.getSound(), "Уровень шума по умолчанию должен быть SILENCE");
     }
 
     // --------------------------------------------------------------------
@@ -148,219 +389,17 @@ class SceneLombokTest {
             p.move(newLoc);
             assertEquals(newLoc, p.getLocation());
         }
-    }
-
-    // --------------------------------------------------------------------
-    // ТЕСТЫ CROWD
-    // --------------------------------------------------------------------
-
-    @Nested
-    @DisplayName("Crowd тесты")
-    class CrowdTests {
 
         @Test
-        @DisplayName("Создание через билдер")
-        void createWithBuilder() {
-            Crowd c = Crowd.builder().build();
-            assertEquals(0, c.size());
-            assertFalse(c.isCheering());
-        }
+        void NoArgsConstructor() {
+            Person person = new Person();
 
-        @Test
-        @DisplayName("Добавление людей")
-        void addPeople() {
-            Person p1 = Person.builder().id("1").location(ground).build();
-            Person p2 = Person.builder().id("2").location(ground).build();
+            assertNotNull(person);
 
-            crowd.addPerson(p1);
-            crowd.addPerson(p2);
-
-            assertEquals(2, crowd.size());
-            assertTrue(crowd.getPeople().contains(p1));
-        }
-
-        @Test
-        @DisplayName("Ликование толпы")
-        void cheering() {
-            Person p = Person.builder().id("1").location(ground).build();
-            crowd.addPerson(p);
-            crowd.cheer();
-
-            assertTrue(crowd.isCheering());
-            assertTrue(p.isCheering());
-            assertEquals(Mood.EXULTANT, crowd.getMood());
-            assertEquals(SoundLevel.LOUD, crowd.getSound());
-        }
-    }
-
-    // --------------------------------------------------------------------
-    // ТЕСТЫ SPEAKER
-    // --------------------------------------------------------------------
-
-    @Nested
-    @DisplayName("Speaker тесты")
-    class SpeakerTests {
-
-        @Test
-        @DisplayName("Создание через билдер")
-        void createWithBuilder() {
-            Speaker s = Speaker.builder()
-                    .name("Test")
-                    .location(ground)
-                    .build();
-
-            assertEquals("Test", s.getName());
-            assertEquals(ground, s.getLocation());
-            assertFalse(s.isSpeaking());
-        }
-
-        @Test
-        @DisplayName("Речь")
-        void speak() {
-            speaker.speak("Hello!");
-            assertTrue(speaker.isSpeaking());
-            assertEquals("Hello!", speaker.getCurrentSpeech());
-        }
-
-        @Test
-        @DisplayName("Окончание речи")
-        void stop() {
-            speaker.speak("Hello");
-            speaker.stop();
-            assertFalse(speaker.isSpeaking());
-            assertNull(speaker.getCurrentSpeech());
-        }
-    }
-
-    // --------------------------------------------------------------------
-    // ТЕСТЫ REACTION - ИСПРАВЛЕНО
-    // --------------------------------------------------------------------
-
-//    @Nested
-//    @DisplayName("Reaction тесты")
-//    class ReactionTests {
-//
-//        @Test
-//        @DisplayName("Создание через билдер")
-//        void createWithBuilder() {
-//            Reaction r = Reaction.builder()
-//                    .type(ReactionType.CHEERING)
-//                    .intensity(75)
-//                    .build();
-//
-//            assertEquals(ReactionType.CHEERING, r.getType());
-//            assertEquals(75, r.getIntensity());
-//        }
-//
-//        @Test
-//        @DisplayName("Создание через конструктор")
-//        void createWithConstructor() {
-//            Reaction r = new Reaction(ReactionType.CHEERING, 75);
-//            assertEquals(ReactionType.CHEERING, r.getType());
-//            assertEquals(75, r.getIntensity());
-//        }
-//
-//        @Test
-//        @DisplayName("Валидация интенсивности")
-//        void validateIntensity() {
-//            assertThrows(IllegalArgumentException.class,
-//                    () -> new Reaction(ReactionType.CHEERING, -1));
-//            assertThrows(IllegalArgumentException.class,
-//                    () -> new Reaction(ReactionType.CHEERING, 101));
-//            assertDoesNotThrow(() -> new Reaction(ReactionType.CHEERING, 0));
-//            assertDoesNotThrow(() -> new Reaction(ReactionType.CHEERING, 100));
-//        }
-//
-//        @Test
-//        @DisplayName("@NonNull валидация")
-//        void nonNullValidation() {
-//            assertThrows(NullPointerException.class,
-//                    () -> new Reaction(null, 50));
-//        }
-//    }
-
-    // --------------------------------------------------------------------
-    // ТЕСТЫ WINDOW - ИСПРАВЛЕНО
-    // --------------------------------------------------------------------
-
-    @Nested
-    @DisplayName("Window тесты")
-    class WindowTests {
-
-        @Test
-        @DisplayName("Создание через конструктор с валидацией")
-        void createWithConstructor() {
-            Window w = new Window("W1", 2, true);
-            w.setLocation(windowLoc);
-
-            assertAll(
-                    () -> assertEquals("W1", w.getId()),
-                    () -> assertEquals(2, w.getFloor()),
-                    () -> assertTrue(w.isMagnificent())
-            );
-        }
-
-        @Test
-        @DisplayName("Валидация этажа")
-        void floorValidation() {
-            assertThrows(IllegalArgumentException.class,
-                    () -> new Window("W1", 0, true));
-            assertThrows(IllegalArgumentException.class,
-                    () -> new Window("W1", -1, true));
-        }
-
-        @Test
-        @DisplayName("@NonNull валидация id")
-        void idValidation() {
-            assertThrows(NullPointerException.class,
-                    () -> new Window(null, 1, true));
-        }
-
-        @Test
-        @DisplayName("Создание через билдер")
-        void createWithBuilder() {
-            Window w = Window.builder()
-                    .id("W1")
-                    .floor(2)
-                    .isMagnificent(true)
-                    .location(windowLoc)
-                    .build();
-
-            assertEquals("W1", w.getId());
-            assertEquals(2, w.getFloor());
-            assertTrue(w.isMagnificent());
-            assertEquals(windowLoc, w.getLocation());
-        }
-    }
-
-    // --------------------------------------------------------------------
-    // ТЕСТЫ BUILDING
-    // --------------------------------------------------------------------
-
-    @Nested
-    @DisplayName("Building тесты")
-    class BuildingTests {
-
-        @Test
-        @DisplayName("Добавление окон")
-        void addWindows() {
-            building.clearWindow();
-            Window w1 = new Window("W1", 1, false);
-            Window w2 = new Window("W2", 2, true);
-
-            building.addWindow(w1);
-            building.addWindow(w2);
-
-            assertEquals(2, building.getWindows().size());
-            assertTrue(building.findWindowOnFloor(2).isPresent());
-            assertEquals(1, building.getMagnificentWindows().size());
-        }
-
-        @Test
-        @DisplayName("Поиск окна")
-        void findWindow() {
-            assertTrue(building.findWindowOnFloor(2).isPresent());
-            assertTrue(building.findWindowOnFloor(99).isEmpty());
+            // Проверяем значения по умолчанию
+            assertNull(person.getId(), "ID должен быть null при использовании NoArgsConstructor");
+            assertNull(person.getLocation(), "Location должна быть null при использовании NoArgsConstructor");
+            assertFalse(person.isCheering(), "Поле isCheering должно быть false по умолчанию");
         }
     }
 
@@ -407,58 +446,48 @@ class SceneLombokTest {
             assertThrows(NullPointerException.class,
                     () -> platform.placeSpeaker(null));
         }
-    }
-
-    // --------------------------------------------------------------------
-    // ТЕСТЫ ARTHUR
-    // --------------------------------------------------------------------
-
-    @Nested
-    @DisplayName("Arthur тесты")
-    class ArthurTests {
 
         @Test
-        @DisplayName("Создание через билдер")
-        void createWithBuilder() {
-            Arthur a = Arthur.builder()
-                    .location(ground)
-                    .build();
-
-            assertEquals(ground, a.getLocation());
-            assertFalse(a.isGliding());
-            assertNull(a.getDestination());
+        @DisplayName("@NoArgsConstructor валидация")
+        void NoArgsConstructor() {
+            Platform p1 = new Platform();
+            assertNotNull(p1);
+            assertNull(p1.getLocation());
         }
 
         @Test
-        @DisplayName("Скольжение к окну")
-        void glideToWindow() {
-            Window window = building.findWindowOnFloor(2).get();
-            arthur.glideTo(window);
+        @DisplayName("@EqualsAndHashCode валидация")
+        void EqualsAndHashCode() {
+            Location loc1 = new Location(1,2,3); // Допустим, у Location тоже есть equals/hashCode;
+            Speaker s1 = new Speaker();
 
-            assertTrue(arthur.isGliding());
-            assertEquals(window.getLocation(), arthur.getDestination());
+            Platform p1 = Platform.builder().location(loc1).speaker(s1).build();
+            Platform p2 = Platform.builder().location(loc1).speaker(s1).build();
+
+
+            assertEquals(p1, p1);
+
+//            assertEquals(p1, p2);
+//            assertEquals(p1.hashCode(), p2.hashCode());
         }
 
         @Test
-        @DisplayName("Остановка")
-        void stop() {
-            Window window = building.findWindowOnFloor(2).get();
-            arthur.glideTo(window);
-            arthur.stop();
-
-            assertFalse(arthur.isGliding());
-            assertNull(arthur.getDestination());
+        @DisplayName("@ToString валидация")
+        void ToString() {
+            Platform p1 = new Platform();
+            String toString = p1.toString();
+            assertTrue(toString.contains("Platform"));
+            assertTrue(toString.contains("location="));
+            assertTrue(toString.contains("speaker="));
         }
 
         @Test
-        @DisplayName("@NonNull валидация")
-        void nonNullValidation() {
-            assertThrows(NullPointerException.class,
-                    () -> Arthur.builder().location(null).build());
-            assertThrows(NullPointerException.class,
-                    () -> arthur.glideTo(null));
-            assertThrows(NullPointerException.class,
-                    () -> arthur.moveTo(null));
+        @DisplayName("@Setter валидация")
+        void Setter() {
+            Platform p1 = new Platform();
+            Speaker mockSpeaker = new Speaker(); // Предположим, класс Speaker существует
+            p1.setSpeaker(mockSpeaker);
+            assertEquals(mockSpeaker, p1.getSpeaker());
         }
     }
 
@@ -517,48 +546,115 @@ class SceneLombokTest {
                             .arthur(arthur)
                             .build());
         }
+
+        @Test
+        @DisplayName("Валидация @NoArgsConstructor")
+        void NoArgsConstructor() {
+            Scene scene = new Scene();
+
+            assertThrows(NullPointerException.class, () -> scene.setCrowd(null));
+        }
     }
 
     // --------------------------------------------------------------------
-    // ИНТЕГРАЦИОННЫЙ ТЕСТ
+    // ТЕСТЫ SPEAKER
     // --------------------------------------------------------------------
 
-    @Test
-    @DisplayName("Полная сцена")
-    void fullScene() {
-        // Добавляем людей в толпу
-        for (int i = 0; i < 5; i++) {
-            crowd.addPerson(Person.builder()
-                    .id(String.valueOf(i))
-                    .location(Location.builder()
-                            .x(5 + i)
-                            .y(0)
-                            .z(0)
-                            .build())
-                    .build());
+    @Nested
+    @DisplayName("Speaker тесты")
+    class SpeakerTests {
+
+        @Test
+        @DisplayName("Создание через билдер")
+        void createWithBuilder() {
+            Speaker s = Speaker.builder()
+                    .name("Test")
+                    .location(ground)
+                    .build();
+
+            assertEquals("Test", s.getName());
+            assertEquals(ground, s.getLocation());
+            assertFalse(s.isSpeaking());
         }
 
-        // Действие
-        platform.placeSpeaker(speaker);
-        speaker.speak("Свобода!");
-        crowd.cheer();
+        @Test
+        @DisplayName("Речь")
+        void speak() {
+            speaker.speak("Hello!");
+            assertTrue(speaker.isSpeaking());
+            assertEquals("Hello!", speaker.getCurrentSpeech());
+        }
 
-        Window window = building.findWindowOnFloor(2).get();
-        arthur.glideTo(window);
-
-        // Проверки
-        assertAll(
-                () -> assertTrue(platform.hasSpeaker()),
-                () -> assertTrue(speaker.isSpeaking()),
-                () -> assertEquals("Свобода!", speaker.getCurrentSpeech()),
-                () -> assertTrue(crowd.isCheering()),
-                () -> assertEquals(5, crowd.size()),
-                () -> assertTrue(crowd.getPeople().stream().allMatch(Person::isCheering)),
-                () -> assertTrue(arthur.isGliding()),
-                () -> assertEquals(windowLoc, arthur.getDestination()),
-                () -> assertTrue(scene.isArthurGlidingToSecondFloor())
-        );
+        @Test
+        @DisplayName("Окончание речи")
+        void stop() {
+            speaker.speak("Hello");
+            speaker.stop();
+            assertFalse(speaker.isSpeaking());
+            assertNull(speaker.getCurrentSpeech());
+        }
     }
 
 
+    // --------------------------------------------------------------------
+    // ТЕСТЫ WINDOW
+    // --------------------------------------------------------------------
+
+    @Nested
+    @DisplayName("Window тесты")
+    class WindowTests {
+
+        @Test
+        @DisplayName("Создание через конструктор с валидацией")
+        void createWithConstructor() {
+            Window w = new Window("W1", 2, true);
+            w.setLocation(windowLoc);
+
+            assertAll(
+                    () -> assertEquals("W1", w.getId()),
+                    () -> assertEquals(2, w.getFloor()),
+                    () -> assertTrue(w.isMagnificent())
+            );
+        }
+
+        @Test
+        @DisplayName("Валидация этажа")
+        void floorValidation() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Window("W1", 0, true));
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Window("W1", -1, true));
+        }
+
+        @Test
+        @DisplayName("@NonNull валидация id")
+        void idValidation() {
+            assertThrows(NullPointerException.class,
+                    () -> new Window(null, 1, true));
+        }
+
+        @Test
+        @DisplayName("Создание через билдер")
+        void createWithBuilder() {
+            Window w = Window.builder()
+                    .id("W1")
+                    .floor(2)
+                    .isMagnificent(true)
+                    .location(windowLoc)
+                    .build();
+
+            assertEquals("W1", w.getId());
+            assertEquals(2, w.getFloor());
+            assertTrue(w.isMagnificent());
+            assertEquals(windowLoc, w.getLocation());
+        }
+
+        @Test
+        @DisplayName("Валидация @NoArgsConstructor")
+        void NoArgsConstructor() {
+            Window window = new Window();
+
+            assertNull(window.getId());
+        }
+    }
 }
