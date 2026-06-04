@@ -76,8 +76,7 @@
 				<version>3.2.3</version>
 				<configuration>
 					<systemPropertyVariables>
-						<browser>${</browser>
-						<browser>browser}</browser>
+						<browser>${browser}</browser>
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>
