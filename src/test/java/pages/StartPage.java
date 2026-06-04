@@ -32,19 +32,25 @@ public class StartPage {
         }
     }
 
-//    @Step("Закрыть popup авторизации если есть")
-//    public void closeAuthPopup() {
-//        sleep(1000);
-//        if ($x("//div[contains(@class, 'magritte-icon-dynamic')]//button").is(visible)) {
-//            $x("//div[contains(@class, 'magritte-icon-dynamic')]//button").shouldBe(visible).click();
-//        }
-//    }
-
-
     @Step("Поиск по фразе {0}")
-    public void searchVacanciesByText(String text) {
+    public void searchVacanciesByText(String vacancy) {
         sleep(1000);
-        $x("//*[@data-qa='search-input']").setValue(text).pressEnter();
+        $x("//*[@data-qa='search-input']").setValue(vacancy).pressEnter();
+    }
+
+    @Step("Открыть фильтры")
+    public void openFilter() {
+        sleep(1000);
+        $x("//*[@data-qa='advanced-search']").click();
+    }
+
+    @Step("Настройка фильтров")
+    public void setFilter(String vacancy, int price, String excluded) {
+        sleep(1000);
+        $x("//*[@data-qa='vacancysearch__keywords-input']").setValue(vacancy);
+        $x("//*[@data-qa='vacancysearch__keywords-excluded-input']").setValue(excluded);
+        $x("//*[@data-qa='advanced-search-salary']").setValue(String.valueOf(price));
+        $x("//*[@data-qa='advanced-search-submit-button']").click();
     }
 
     @Step("Страница содержит промотекст для соискателя")

@@ -3,31 +3,9 @@ package tests;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-import utils.BrowserType;
-import java.util.stream.Stream;
-import static com.codeborne.selenide.Selenide.open;
 
 @DisplayName("Проверка функционала главной страницы")
 public class TestStartPage extends TestBase {
-
-//    static Stream<BrowserType> browserCases() {
-//        return Stream.of(BrowserType.CHROME, BrowserType.FIREFOX);
-//    }
-//
-//    @ParameterizedTest
-//    @MethodSource("browserCases")
-//    @Tag("UI")
-//    @DisplayName("Проверка промотекста для соискателя")
-//    void checkTitleForApplicants(BrowserType browser) {
-//        initDriver(browser);
-//        open("/");
-//        startPage.closeAuthPopup();
-//        startPage.closeCookieBanner();
-//        startPage.checkPromoTitle("Напишите телефон, чтобы работодатели могли предложить вам работу");
-//        quitDriver();
-//    }
 
     @Test
     @Tag("UI")

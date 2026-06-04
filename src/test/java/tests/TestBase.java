@@ -7,11 +7,9 @@ import io.qameta.allure.selenide.AllureSelenide;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import helpers.Attachments;
 import pages.*;
 import java.util.Properties;
 import static com.codeborne.selenide.Selenide.sleep;
-import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
 public class TestBase {
     protected StartPage startPage = new StartPage();
@@ -40,7 +38,7 @@ public class TestBase {
         Configuration.headless = false;
         Configuration.browserPosition = "0x0";
 //        Configuration.browser = System.getProperty("browser", "firefox");
-        Configuration.browser = System.getProperty("browser", "chrome");
+        Configuration.browser = System.getProperty("browser", "chrome"); //
     }
 
     @BeforeEach
@@ -52,35 +50,8 @@ public class TestBase {
         sleep(1000);
     }
 
-//    @AfterEach
-//    void afterEach() {
-//        Selenide.closeWebDriver();
-//    }
-
     @AfterEach
-    void addAttachments() {
-        if (getWebDriver() != null) {
-            Attachments.screenshotAs("Last screenshot");
-            Attachments.pageSource();
-            Attachments.browserConsoleLogs();
-//            Attachments.addVideo();
-        }
+    void afterEach() {
+        Selenide.closeWebDriver();
     }
-
-//    protected void initDriver(BrowserType browserType) {
-//        if (browserType == BrowserType.FIREFOX) {
-//            System.setProperty("webdriver.gecko.driver", "/Users/admin_1/Downloads/selenium-java-4-2/selenium-firefox-driver-4.44.0.jar");
-//            Configuration.browser = "firefox";
-//        } else {
-//            System.setProperty("webdriver.chrome.driver", "/Users/admin_1/Downloads/selenium-java-4-2/selenium-chrome-driver-4.44.0.jar");
-//            Configuration.browser = "chrome";
-//        }
-//
-//        Configuration.baseUrl = "https://hh.ru";
-//        Configuration.browserSize = "1920x1080";
-//    }
-//
-//    protected void quitDriver() {
-//        Selenide.closeWebDriver();
-//    }
 }

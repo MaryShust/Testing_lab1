@@ -64,4 +64,28 @@ public class TestApplicant extends TestBase {
 
         mainPage.checkSuccessPublicationResume();
     }
+
+    @Test
+    @Tag("UI")
+    @DisplayName("Поиск резюме с применением фильтра")
+    public void searchVacanciesWithFilter() {
+        String search = "Тестировщик";
+        int price = 100000000;
+        String excluded = "Рабство";
+        startPage.openFilter();
+        startPage.setFilter(search, price, excluded);
+        mainPage.checkSearchHeader(search);
+    }
+
+    @Test
+    @Tag("UI")
+    @DisplayName("Поиск резюме с применением фильтра противоречащего себе")
+    public void searchVacanciesWithFailFilter() {
+        String vacancy = "Тестировщик";
+        String expected = "По запросу «" + vacancy + "» ничего не найдено";
+        int price = 100000000;
+        startPage.openFilter();
+        startPage.setFilter(vacancy, price, vacancy);
+        mainPage.checkSearchHeader(expected);
+    }
 }
