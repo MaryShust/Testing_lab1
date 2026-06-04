@@ -4,11 +4,11 @@ import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.logevents.SelenideLogger;
 import io.qameta.allure.selenide.AllureSelenide;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import pages.*;
+import utils.BrowserType;
 import java.util.Properties;
+import java.util.stream.Stream;
 import static com.codeborne.selenide.Selenide.sleep;
 
 public class TestBase {
@@ -29,29 +29,41 @@ public class TestBase {
         }
     }
 
-    @BeforeAll
-    static void beforeAll() {
+//    @BeforeAll
+//    static void beforeAll() {
+//        SelenideLogger.addListener("AllureSelenide", new AllureSelenide());
+//        Configuration.baseUrl = "https://hh.ru";
+//        Configuration.browserSize = "1620x1080";
+//        Configuration.pageLoadTimeout = 50000;
+//        Configuration.headless = false;
+//        Configuration.browserPosition = "0x0";
+//    }
+
+    protected void initDriver(BrowserType browserType) {
         SelenideLogger.addListener("AllureSelenide", new AllureSelenide());
         Configuration.baseUrl = "https://hh.ru";
         Configuration.browserSize = "1620x1080";
         Configuration.pageLoadTimeout = 50000;
         Configuration.headless = false;
         Configuration.browserPosition = "0x0";
-//        Configuration.browser = System.getProperty("browser", "firefox");
-        Configuration.browser = System.getProperty("browser", "chrome"); //
-    }
 
-    @BeforeEach
-    void setupTests() {
+        if (browserType == BrowserType.FIREFOX) {
+            Configuration.browser = "firefox";
+        } else {
+            Configuration.browser = "chrome";
+        }
         Selenide.clearBrowserCookies();
         startPage.openPage();
-//        startPage.closeAuthPopup();
+        startPage.closeAuthPopup();
         startPage.closeCookieBanner();
         sleep(1000);
     }
 
-    @AfterEach
-    void afterEach() {
+    protected void quitDriver() {
         Selenide.closeWebDriver();
+    }
+
+    static Stream<BrowserType> browserCases() {
+        return Stream.of(BrowserType.CHROME, BrowserType.FIREFOX);
     }
 }
