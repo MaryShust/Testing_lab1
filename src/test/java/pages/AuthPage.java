@@ -15,6 +15,11 @@ public class AuthPage {
         $x("//*[@data-qa='cell']").click();
         $x("//button[@data-qa='submit-button']").click();
         $x("//*[@data-qa='credential-type-EMAIL']/ancestor::label").click();
+
+//        $x("//input[@data-qa='applicant-login-input-email']")
+//                .shouldBe(visible, Duration.ofSeconds(10))
+//                .setValue(mail);
+
         sleep(1000);
         $x("//input[@data-qa='applicant-login-input-email']").setValue(mail);
         $x("//button[@data-qa='expand-login-by-password']").click();

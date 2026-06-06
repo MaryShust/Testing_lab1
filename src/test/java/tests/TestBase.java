@@ -19,6 +19,7 @@ public class TestBase {
     protected StartEmployerPage startEmployerPage = new StartEmployerPage();
     protected ProfilePage profilePage = new ProfilePage();
     protected ResumePage resumePage = new ResumePage();
+    protected VacancyPage vacancyPage = new VacancyPage();
     protected Properties props = new Properties();
 
     public TestBase() {
