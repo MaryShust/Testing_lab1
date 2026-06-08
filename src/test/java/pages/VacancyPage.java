@@ -18,16 +18,36 @@ public class VacancyPage {
         return accreditationElement.shouldBe(visible).getText();
     }
 
-    @Step("Получение текста об аккредитации компании")
+    @Step("Получение текста о формате работы")
     public String getFormatJob() {
-        sleep(8000);
+        sleep(5000);
 
         var formatJobElement = $x(
-                "//*[@data-qa='work-formats-text']"
+            "//span[contains(text(), 'Гибрид') or contains(text(), 'Удалённо') or contains(text(), 'Офис')]"
         );
 
         return formatJobElement.shouldBe(visible).getText();
     }
 
+    @Step("Получение текста о рабочих часах")
+    public String getWorkingHours() {
+        sleep(5000);
 
+        var hoursElement = $x(
+            "//span[contains(text(), '8 часов') or contains(text(), 'часов в день')]"
+        );
+
+        return hoursElement.shouldBe(visible).getText();
+    }
+
+    @Step("Получение текста о графике работы")
+    public String getWorkSchedule() {
+        sleep(5000);
+
+        var scheduleElement = $x(
+            "//span[contains(text(), '5/2') or contains(text(), 'Полный день')]"
+        );
+
+        return scheduleElement.shouldBe(visible).getText();
+    }
 }

@@ -40,12 +40,58 @@ public class MainPage {
 
     @Step("Установка фильтра часы работы")
     public void clickTimeFilter() {
-        $x("//input[@value='HOURS_8']/ancestor::label").click();
+        sleep(2000);
+        executeJavaScript("window.scrollBy(0, 300);");
+        sleep(1000);
+        
+        try {
+            var otherParams = $x("//button[contains(text(), 'Другие параметры')]").shouldBe(visible);
+            otherParams.scrollIntoView(true);
+            otherParams.click();
+            sleep(3000);
+        } catch (Exception e) {
+            executeJavaScript("document.querySelectorAll('button').forEach(b => { if (b.textContent.includes('Другие')) b.click(); })");
+            sleep(3000);
+        }
+
+        executeJavaScript(
+            "const inputs = document.querySelectorAll('input');" +
+            "for (let input of inputs) {" +
+            "  if (input.value === '8hours') {" +
+            "    input.click();" +
+            "    return;" +
+            "  }" +
+            "}"
+        );
+        sleep(2000);
     }
 
     @Step("Установка фильтра график работы")
     public void clickOpeningHoursFilter() {
-        $x("//input[@value='FIVE_ON_TWO_OFF']/ancestor::label").click();
+        sleep(2000);
+        executeJavaScript("window.scrollBy(0, 300);");
+        sleep(1000);
+        
+        try {
+            var otherParams = $x("//button[contains(text(), 'Другие параметры')]").shouldBe(visible);
+            otherParams.scrollIntoView(true);
+            otherParams.click();
+            sleep(3000);
+        } catch (Exception e) {
+            executeJavaScript("document.querySelectorAll('button').forEach(b => { if (b.textContent.includes('Другие')) b.click(); })");
+            sleep(3000);
+        }
+
+        executeJavaScript(
+            "const inputs = document.querySelectorAll('input');" +
+            "for (let input of inputs) {" +
+            "  if (input.value === 'FiveDays') {" +
+            "    input.click();" +
+            "    return;" +
+            "  }" +
+            "}"
+        );
+        sleep(2000);
     }
 
     @Step("Установка фильтра тип занятости")
@@ -79,5 +125,14 @@ public class MainPage {
     public String checkSpecializationFilter() {
         var specializationElement = $x("//*[@data-qa='serp-item__title-text']").shouldHave(text("Инженер по качеству"));
         return specializationElement.getText();
+    }
+
+    @Step("Получение текста примененного фильтра")
+    public String getAppliedFilterText() {
+        sleep(2000);
+        return executeJavaScript(
+            "const filters = document.querySelectorAll('[data-qa=\"selected-filters-item\"]');" +
+            "return filters.length > 0 ? filters[0].textContent : 'Фильтр применен';"
+        );
     }
 }

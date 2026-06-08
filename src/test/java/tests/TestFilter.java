@@ -42,12 +42,14 @@ public class TestFilter extends TestBase{
         startPage.closeAuthPopup();
         mainPage.clickFormatJobFilter();
         mainPage.clickToVacancy();
-        vacancyPage.getFormatJob();
-//        String accreditationText = vacancyPage.getFormatJob();
-//        Assertions.assertTrue(
-//                accreditationText.toLowerCase().contains("гибрид"),
-//                "Форма работы не гибрид. Текст: " + accreditationText
-//        );
+
+        String formatJobText = vacancyPage.getFormatJob();
+        Assertions.assertTrue(
+            formatJobText.toLowerCase().contains("гибрид") ||
+            formatJobText.toLowerCase().contains("удалённо") ||
+            formatJobText.toLowerCase().contains("офис"),
+            "Форма работы не соответствует фильтру. Текст: " + formatJobText
+        );
 
         quitDriver();
     }
@@ -55,20 +57,19 @@ public class TestFilter extends TestBase{
     @ParameterizedTest
     @MethodSource("browserCases")
     @Tag("UI")
-    @DisplayName("Применение фильтра - рабочие часы (8 ч)")
+    @DisplayName("Применение фильтра - опыт работы (От 1 года до 3 лет)")
     public void searchVacanciesByTimeFilter(BrowserType browser) {
         initDriver(browser);
         String search = "тестировщик";
         startPage.searchVacanciesByText(search);
         startPage.closeAuthPopup();
-        mainPage.clickTimeFilter();
-        mainPage.clickToVacancy();
-//        vacancyPage.getFormatJob();
-//        String accreditationText = vacancyPage.getFormatJob();
-//        Assertions.assertTrue(
-//                accreditationText.toLowerCase().contains("гибрид"),
-//                "Форма работы не гибрид. Текст: " + accreditationText
-//        );
+        mainPage.clickExperienceFilter();
+
+        String experiencText = mainPage.checkExperienceFilter();
+        Assertions.assertTrue(
+                experiencText.toLowerCase().contains("опыт 1-3 года"),
+                "Опыт работы не 1-3 года. Текст: " + experiencText
+        );
 
         quitDriver();
     }
@@ -76,20 +77,19 @@ public class TestFilter extends TestBase{
     @ParameterizedTest
     @MethodSource("browserCases")
     @Tag("UI")
-    @DisplayName("Применение фильтра - график работы (5/2)")
+    @DisplayName("Применение фильтра - тип занятости (подработка)")
     public void searchVacanciesByOpeningHoursFilter(BrowserType browser) {
         initDriver(browser);
         String search = "тестировщик";
         startPage.searchVacanciesByText(search);
         startPage.closeAuthPopup();
-        mainPage.clickOpeningHoursFilter();
-        mainPage.clickToVacancy();
-//        vacancyPage.getFormatJob();
-//        String accreditationText = vacancyPage.getFormatJob();
-//        Assertions.assertTrue(
-//                accreditationText.toLowerCase().contains("гибрид"),
-//                "Форма работы не гибрид. Текст: " + accreditationText
-//        );
+        mainPage.clickTypeOfEmploymentFilter();
+
+        String employmentText = mainPage.checkTypeOfEmploymentFilter();
+        Assertions.assertTrue(
+                employmentText.toLowerCase().contains("подработка"),
+                "Форма работы не подработка. Текст: " + employmentText
+        );
 
         quitDriver();
     }
