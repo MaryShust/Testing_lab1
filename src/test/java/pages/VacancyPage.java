@@ -7,6 +7,16 @@ import static com.codeborne.selenide.Selenide.*;
 
 public class VacancyPage {
 
+    @Step("Получение названия вакансии")
+    public String getVacancyTitle() {
+        sleep(3000);
+        var titleElement = $x(
+                "//h1[@data-qa='vacancy-title']"
+        );
+
+        return titleElement.getText();
+    }
+
     @Step("Получение текста об аккредитации компании")
     public String getAccreditationText() {
         sleep(8000);

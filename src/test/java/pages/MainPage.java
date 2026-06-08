@@ -135,4 +135,10 @@ public class MainPage {
             "return filters.length > 0 ? filters[0].textContent : 'Фильтр применен';"
         );
     }
+
+    @Step("Установка фильтра специализации")
+    public String checkWorkFromHome() {
+        var specializationElement = $x("//*[@data-qa='vacancy-label-work-schedule-remote']").shouldHave(text("Можно удалённо"));
+        return specializationElement.getText();
+    }
 }

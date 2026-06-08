@@ -68,4 +68,45 @@ public class StartPage {
         $x("//a[@data-qa='index__work-in-company-header']").shouldHave(text(companyHeader));
         $x("//*[@data-qa='index__work-in-profession-header']").shouldHave(text(professionHeader));
     }
+
+    @Step("Кликнуть на первую вакансию в поиске")
+    public String clickFirstVacancy() {
+        sleep(2000);
+        var element = $x("(//*[@data-qa='vacancy_of_the_day_title'])[1]");
+        String title = element.getText();
+        element.click();
+        return title;
+    }
+
+    @Step("Кликнуть на вакансии дня")
+    public String clickVacancyOfDay() {
+        sleep(2000);
+        var element = $x("(//*[@data-qa='company-item-desktop'])");
+        String title = element.getText();
+        element.click();
+        return title;
+    }
+
+    @Step("Кликнуть на первую компанию в списке")
+    public String clickFirstCompany() {
+        sleep(2000);
+        var element = $x("(//*[@data-qa='company-item-desktop'])");
+        String title = element.getText();
+        element.click();
+        return title;
+    }
+
+    @Step("Открыть работа из дома")
+    public void clickWorkFromHome() {
+        sleep(1000);
+        $x("//*[@data-qa='remote-item-desktop']").click();
+    }
+
+    @Step("Открыть фильтры")
+    public String clickWorkInCompany() {
+        sleep(1000);
+        var element = $x("//*[@id='7172']");
+        element.shouldHave(text("Лента, федеральная розничная сеть")).click();
+        return element.getText();
+    }
 }
