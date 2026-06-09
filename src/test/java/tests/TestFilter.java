@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import utils.BrowserType;
-
-import static com.codeborne.selenide.Selenide.sleep;
+import java.util.List;
 
 @DisplayName("Проверка поиска с применением фильтров")
 public class TestFilter extends TestBase{
@@ -147,10 +146,10 @@ public class TestFilter extends TestBase{
         startPage.searchVacanciesByText(search);
         startPage.closeAuthPopup();
         mainPage.clickSpecializationFilter();
-        String specializationText = mainPage.checkSpecializationFilter();
+        List<String> specializationText = mainPage.getSpecializationsFilter();
 
         Assertions.assertTrue(
-                specializationText.toLowerCase().contains("инженер по качеству"),
+                specializationText.contains("инженер по качеству"),
                 "Специализация не Инженер по качеству. Текст: " + specializationText
         );
 
