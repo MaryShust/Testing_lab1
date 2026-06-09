@@ -2,11 +2,15 @@ package pages;
 
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
+import org.openqa.selenium.JavascriptExecutor;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Selenide.$x;
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.Selenide.sleep;
+import static com.codeborne.selenide.Selenide.actions;
+import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
 public class StartPage {
 
@@ -78,8 +82,34 @@ public class StartPage {
         return title;
     }
 
-    @Step("Кликнуть на вакансии дня")
-    public String clickVacancyOfDay() {
+    @Step("Кликнуть на блок вакансии дня")
+    public String clickBlocVacancyOfDay() {
+        sleep(2000);
+        var element = $x("(//*[@data-qa='vacancy-item-desktop'])");
+        String title = element.getText();
+        element.click();
+        return title;
+    }
+
+    @Step("Кликнуть на вакансию дня")
+    public void clickVacancyOfDay() {
+        sleep(3000);
+        var linkElement = $x("//*[@data-qa='vacancy_of_the_day_title']").shouldBe(visible);
+        ((JavascriptExecutor) getWebDriver())
+            .executeScript("arguments[0].scrollIntoView({block: 'center'});", linkElement);
+        sleep(500);
+        linkElement.click();
+    }
+
+    @Step("Получить URL вакансии дня")
+    public String getVacancyOfDayUrl() {
+        sleep(2000);
+        var linkElement = $x("//a[.//*[@data-qa='vacancy_of_the_day_title']]").shouldBe(visible);
+        return linkElement.getAttribute("href");
+    }
+
+    @Step("Кликнуть на первую компанию в списке")
+    public String clickCompanyOfDay() {
         sleep(2000);
         var element = $x("(//*[@data-qa='company-item-desktop'])");
         String title = element.getText();
@@ -87,10 +117,10 @@ public class StartPage {
         return title;
     }
 
-    @Step("Кликнуть на первую компанию в списке")
-    public String clickFirstCompany() {
+    @Step("Кликнуть на первую вакансию в поиске")
+    public String clickFirstCompanyOfDay() {
         sleep(2000);
-        var element = $x("(//*[@data-qa='company-item-desktop'])");
+        var element = $x("(//*[@data-qa='company-of-the-day-name'])[1]");
         String title = element.getText();
         element.click();
         return title;

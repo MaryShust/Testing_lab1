@@ -45,7 +45,7 @@ public class TestBase {
         SelenideLogger.addListener("AllureSelenide", new AllureSelenide());
         Configuration.baseUrl = "https://hh.ru";
         Configuration.browserSize = "1620x1080";
-        Configuration.pageLoadTimeout = 50000;
+        Configuration.pageLoadTimeout = 120000;
         Configuration.headless = false;
         Configuration.browserPosition = "0x0";
 
