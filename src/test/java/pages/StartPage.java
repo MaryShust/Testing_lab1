@@ -5,11 +5,9 @@ import io.qameta.allure.Step;
 import org.openqa.selenium.JavascriptExecutor;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Selenide.$x;
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.Selenide.sleep;
-import static com.codeborne.selenide.Selenide.actions;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
 public class StartPage {
@@ -58,28 +56,23 @@ public class StartPage {
     }
 
     @Step("Страница содержит промотекст для соискателя")
-    public void checkPromoTitle(String expectedTitle) {
-        $x("//*[@data-qa='title-container']").shouldHave(text(expectedTitle));
+    public String getPromoTitle() {
+        return $x("//*[@data-qa='title-container']").getText();
     }
 
-    @Step("Отображаются вакансии для города {0}")
-    public void checkWorkInCompanyTitle(
-            String title,
-            String companyHeader,
-            String professionHeader
-    ) {
-        $x("//*[@data-qa='main-page-anonymous-header']").shouldHave(text(title));
-        $x("//a[@data-qa='index__work-in-company-header']").shouldHave(text(companyHeader));
-        $x("//*[@data-qa='index__work-in-profession-header']").shouldHave(text(professionHeader));
+    @Step("Отображаются вакансии для города")
+    public String getWorkInHeaderTitle() {
+        return $x("//*[@data-qa='main-page-anonymous-header']").getText();
     }
 
-    @Step("Кликнуть на первую вакансию в поиске")
-    public String clickFirstVacancy() {
-        sleep(2000);
-        var element = $x("(//*[@data-qa='vacancy_of_the_day_title'])[1]");
-        String title = element.getText();
-        element.click();
-        return title;
+    @Step("Отображаются компаний для города")
+    public String getWorkInCompanyTitle() {
+        return $x("//a[@data-qa='index__work-in-company-header']").getText();
+    }
+
+    @Step("Отображаются профессий для города")
+    public String getWorkInProfessionTitle() {
+        return $x("//*[@data-qa='index__work-in-profession-header']").getText();
     }
 
     @Step("Кликнуть на блок вакансии дня")

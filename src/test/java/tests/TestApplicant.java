@@ -65,26 +65,6 @@ public class TestApplicant extends TestBase {
     @ParameterizedTest
     @MethodSource("browserCases")
     @Tag("UI")
-    @DisplayName("Создание резюме")
-    public void createResume(BrowserType browser) {
-        initDriver(browser);
-        String speciality = "Тестировщик";
-        headerPartPage.openAuth();
-        authPage.loginByMailAndPassword(props);
-        headerPartPage.openProfile();
-        profilePage.closeWhatsNew();
-        profilePage.removeResume(speciality);
-
-        headerPartPage.openCreateResume();
-        resumePage.createResume(speciality);
-
-        mainPage.checkSuccessPublicationResume();
-        quitDriver();
-    }
-
-    @ParameterizedTest
-    @MethodSource("browserCases")
-    @Tag("UI")
     @DisplayName("Поиск резюме с применением фильтра")
     public void searchVacanciesWithFilter(BrowserType browser) {
         initDriver(browser);

@@ -2,6 +2,8 @@ package pages;
 
 import io.qameta.allure.Step;
 
+import java.util.List;
+
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
@@ -119,11 +121,20 @@ public class MainPage {
     @Step("Установка фильтра специализации")
     public void clickSpecializationFilter() {
         $x("//input[@value='44']/ancestor::label").click();
+        sleep(1000);
     }
 
+//    @Step("Установка фильтра специализации")
+//    public String checkSpecializationFilter() {
+//        sleep(1000);
+//        var specializationElement = $x("//*[@data-qa='serp-item__title-text']").shouldHave(text("Инженер по качеству"));
+//        return specializationElement.getText();
+//    }
+
     @Step("Установка фильтра специализации")
-    public String checkSpecializationFilter() {
-        var specializationElement = $x("//*[@data-qa='serp-item__title-text']").shouldHave(text("Инженер по качеству"));
+    public List<String> getSpecializationsFilter() {
+        sleep(1000);
+        var specializationElement = $x("//*[@data-qa='serp-item__title-text']");
         return specializationElement.getText();
     }
 

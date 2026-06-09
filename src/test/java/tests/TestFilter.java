@@ -7,6 +7,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import utils.BrowserType;
 
+import static com.codeborne.selenide.Selenide.sleep;
+
 @DisplayName("Проверка поиска с применением фильтров")
 public class TestFilter extends TestBase{
 
@@ -145,8 +147,6 @@ public class TestFilter extends TestBase{
         startPage.searchVacanciesByText(search);
         startPage.closeAuthPopup();
         mainPage.clickSpecializationFilter();
-        mainPage.checkSpecializationFilter();
-
         String specializationText = mainPage.checkSpecializationFilter();
 
         Assertions.assertTrue(

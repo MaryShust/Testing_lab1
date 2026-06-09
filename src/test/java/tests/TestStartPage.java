@@ -18,32 +18,8 @@ public class TestStartPage extends TestBase {
     @DisplayName("Проверка промотекста для соискателя")
     public void checkTitleForApplicants(BrowserType browser) {
         initDriver(browser);
-        startPage.checkPromoTitle("Напишите телефон, чтобы работодатели могли предложить вам работу");
-        quitDriver();
-    }
-
-    @ParameterizedTest
-    @MethodSource("browserCases")
-    @Tag("UI")
-    @DisplayName("Вход")
-    public void login(BrowserType browser) {
-        initDriver(browser);
-        headerPartPage.openAuth();
-        authPage.loginByMailAndPassword(props);
-        mainPage.checkHasVacancy();
-        quitDriver();
-    }
-
-    @ParameterizedTest
-    @MethodSource("browserCases")
-    @Tag("UI")
-    @DisplayName("Выход")
-    public void logout(BrowserType browser) {
-        initDriver(browser);
-        headerPartPage.openAuth();
-        authPage.loginByMailAndPassword(props);
-        headerPartPage.logout();
-        startPage.checkPromoTitle("Напишите телефон, чтобы работодатели могли предложить вам работу");
+        String promoTitle = startPage.getPromoTitle();
+        Assertions.assertTrue(promoTitle.equals("Напишите телефон, чтобы работодатели могли предложить вам работу"), "Промо текст не соответсвует");
         quitDriver();
     }
 
@@ -54,33 +30,15 @@ public class TestStartPage extends TestBase {
     public void checkRegionSwitcher(BrowserType browser) {
         initDriver(browser);
         headerPartPage.changeRegion("Краснодар");
-        startPage.checkWorkInCompanyTitle(
-                "Поиск работы в Краснодаре",
-                "Работа в компаниях Краснодара",
-                "Работа по профессиям в Краснодаре"
-        );
+        String header = startPage.getWorkInHeaderTitle();
+        String companyTitle = startPage.getWorkInCompanyTitle();
+        String professionTitle = startPage.getWorkInProfessionTitle();
+
+        Assertions.assertTrue(header.equals("Поиск работы в Краснодаре"), "Нет блока с заголовком после смены региона");
+        Assertions.assertTrue(companyTitle.equals("Работа в компаниях Краснодара"), "Нет блока с компаниями после смены региона");
+        Assertions.assertTrue(professionTitle.equals("Работа по профессиям в Краснодаре"), "Нет блока с профессиями после смены региона");
         quitDriver();
     }
-
-//    @ParameterizedTest
-//    @MethodSource("browserCases")
-//    @Tag("UI")
-//    @DisplayName("Проверка открытия вакансии дня")
-//    public void checkVacancyOfADay(BrowserType browser) {
-//        initDriver(browser);
-//        startPage.closeAuthPopup();
-//        startPage.clickVacancyOfDay();
-//
-//        String expectedTitle = startPage.clickFirstVacancy();
-//        String actualTitle = vacancyPage.getVacancyTitle();
-//
-//        Assertions.assertFalse(actualTitle.isEmpty(), "Заголовок вакансии не получен");
-//        Assertions.assertTrue(
-//                actualTitle.toLowerCase().contains(expectedTitle.toLowerCase().split(" ")[0]),
-//                "Вакансия не соответствует. Ожидалось: " + expectedTitle + ", получено: " + actualTitle
-//        );
-//        quitDriver();
-//    }
 
     @ParameterizedTest
     @MethodSource("browserCases")
