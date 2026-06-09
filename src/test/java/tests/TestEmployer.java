@@ -1,5 +1,6 @@
 package tests;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,7 +30,9 @@ public class TestEmployer extends TestBase {
         String search = "Тестировщик";
         headerPartPage.clickEmployerLink();
         startEmployerPage.searchResumeByText(search);
-        startEmployerPage.checkSearchHeader("Подходящие кандидаты");
+        String headerText = startEmployerPage.getSearchHeader();
+        Assertions.assertTrue(headerText.contains("Подходящие кандидаты"), 
+            "Заголовок должен содержать: Подходящие кандидаты");
         quitDriver();
     }
 
@@ -42,7 +45,9 @@ public class TestEmployer extends TestBase {
         String search = "Quality Assurance";
         headerPartPage.clickEmployerLink();
         startEmployerPage.searchResumeByText(search);
-        startEmployerPage.checkSearchHeader("Подходящие кандидаты");
+        String headerText = startEmployerPage.getSearchHeader();
+        Assertions.assertTrue(headerText.contains("Подходящие кандидаты"), 
+            "Заголовок должен содержать: Подходящие кандидаты");
         quitDriver();
     }
 
@@ -56,7 +61,10 @@ public class TestEmployer extends TestBase {
         String search2 = "12345";
         headerPartPage.clickEmployerLink();
         startEmployerPage.searchResumeByText(search1);
-        startEmployerPage.checkSearchHeader("Подходящие кандидаты");
+        String header1 = startEmployerPage.getSearchHeader();
+        Assertions.assertTrue(header1.contains("Подходящие кандидаты"), 
+            "После первого поиска должен быть результат");
+
         startEmployerPage.searchResumeByText(search2);
         startEmployerPage.checkFailSearchHeader();
         quitDriver();

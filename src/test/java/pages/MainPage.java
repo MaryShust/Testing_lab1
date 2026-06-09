@@ -14,9 +14,14 @@ public class MainPage {
         $x("//*[@data-qa='vacancy-serp__vacancy']").shouldBe(visible);
     }
 
-    @Step("Проверка отображения заголовка страницы поиска")
-    public void checkSearchHeader(String title) {
-        $x("//*[@data-qa='vacancies-search-header']").shouldHave(text(title));
+    @Step("Получить текст заголовка страницы поиска")
+    public String getSearchHeader() {
+        var header = $x("//*[@data-qa='vacancies-search-header']").shouldBe(visible);
+        String text = header.getText();
+        if (text == null || text.isBlank()) {
+            text = header.innerText();
+        }
+        return (text != null ? text : "").trim();
     }
 
     @Step("Проверка успешности публикации резюме")

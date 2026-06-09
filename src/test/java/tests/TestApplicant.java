@@ -1,5 +1,6 @@
 package tests;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,7 +19,9 @@ public class TestApplicant extends TestBase {
         String search = "Junior-тестировщик";
         startPage.searchVacanciesByText(search);
         startPage.closeAuthPopup();
-        mainPage.checkSearchHeader(search);
+        String headerText = mainPage.getSearchHeader();
+        Assertions.assertTrue(headerText.contains(search), 
+            "Заголовок поиска должен содержать: " + search);
         quitDriver();
     }
 
@@ -31,7 +34,9 @@ public class TestApplicant extends TestBase {
         String search = "Quality Assurance";
         startPage.searchVacanciesByText(search);
         startPage.closeAuthPopup();
-        mainPage.checkSearchHeader(search);
+        String headerText = mainPage.getSearchHeader();
+        Assertions.assertTrue(headerText.contains(search), 
+            "Заголовок поиска должен содержать: " + search);
         quitDriver();
     }
 
@@ -45,7 +50,9 @@ public class TestApplicant extends TestBase {
         String expectedResult = "По запросу «qwertyqwertyuiop» ничего не найдено";
         startPage.searchVacanciesByText(search);
         startPage.closeAuthPopup();
-        mainPage.checkSearchHeader(expectedResult);
+        String headerText = mainPage.getSearchHeader();
+        Assertions.assertEquals(expectedResult, headerText, 
+            "Должно отображаться сообщение о ненайденных вакансиях");
         quitDriver();
     }
 
@@ -58,7 +65,9 @@ public class TestApplicant extends TestBase {
         String search = "Сбербанк";
         startPage.searchVacanciesByText(search);
         startPage.closeAuthPopup();
-        mainPage.checkSearchHeader(search);
+        String headerText = mainPage.getSearchHeader();
+        Assertions.assertTrue(headerText.contains(search), 
+            "Заголовок поиска должен содержать: " + search);
         quitDriver();
     }
 
@@ -73,7 +82,9 @@ public class TestApplicant extends TestBase {
         String excluded = "Рабство";
         startPage.openFilter();
         startPage.setFilter(search, price, excluded);
-        mainPage.checkSearchHeader(search);
+        String headerText = mainPage.getSearchHeader();
+        Assertions.assertTrue(headerText.contains(search), 
+            "Заголовок поиска должен содержать: " + search);
         quitDriver();
     }
 
@@ -88,7 +99,9 @@ public class TestApplicant extends TestBase {
         int price = 100000000;
         startPage.openFilter();
         startPage.setFilter(vacancy, price, vacancy);
-        mainPage.checkSearchHeader(expected);
+        String headerText = mainPage.getSearchHeader();
+        Assertions.assertTrue(headerText.contains(expected),
+            "Должно отображаться сообщение о ненайденных вакансиях");
         quitDriver();
     }
 }
