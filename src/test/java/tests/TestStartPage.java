@@ -7,9 +7,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import utils.BrowserType;
-
-import static com.codeborne.selenide.Selenide.sleep;
-import static com.codeborne.selenide.Selenide.webdriver;
 import static com.codeborne.selenide.Selenide.webdriver;
 
 @DisplayName("Проверка функционала главной страницы")
@@ -182,14 +179,23 @@ public class TestStartPage extends TestBase {
     public void checkWorkInCompany(BrowserType browser) {
         initDriver(browser);
         startPage.closeAuthPopup();
-        startPage.clickFirstCompanyOfDay();
+        String firstCompanyName = startPage.clickFirstCompanyOfDay();
         companyPage.getVacancy();
+        
+        int windowsBefore = webdriver().object().getWindowHandles().size();
         mainPage.clickToVacancy();
+        if (webdriver().object().getWindowHandles().size() > windowsBefore) {
+            Selenide.switchTo().window(windowsBefore);
+        }
         String companyName = vacancyPage.getCompanyName();
-        System.out.println(companyName);
-//        Assertions.assertNotNull(actualTitle, "Заголовок компании не получен");
-//        Assertions.assertFalse(actualTitle.trim().isEmpty(), "Заголовок компании пустой");
-//        Assertions.assertTrue(actualTitle.contains(companyName), "Заголовок компании не совпадает с компанией на которую перешли");
+
+        Assertions.assertNotNull(companyName, "Название компании не получено");
+        Assertions.assertFalse(companyName.trim().isEmpty(), "Название компании пустое");
+        Assertions.assertTrue(
+                companyName.contains(firstCompanyName) ||
+                        companyName.contains(firstCompanyName.split(",")[0]) ||
+                        companyName.contains(firstCompanyName.split("-")[0]),
+                "Заголовок компании не совпадает с компанией на которую перешли");
         quitDriver();
     }
 }
